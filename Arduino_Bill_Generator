@@ -1,0 +1,34 @@
+float units_consumed = 0; //variable to store units consumed
+float bill_amount = 0; //variable to store bill amount
+
+void setup() {
+  Serial.begin(9600); //initialize serial communication
+}
+
+void loop() {
+  //read the analog input from the current sensor and convert it to amps
+  int sensorValue = analogRead(A0);
+  float current = (sensorValue / 1023.0) * 5.0; //5V is the reference voltage
+  current = current * 1000.0; //convert to milliamps
+  
+  //calculate units consumed based on the current and time elapsed
+  units_consumed += (current / 1000.0) * (1.0 / 3600.0); //1 hour = 3600 seconds
+  
+  //calculate bill amount based on the units consumed
+  if(units_consumed <= 100) {
+    bill_amount = units_consumed * 3.50; //Rs. 3.50 per unit for first 100 units
+  }
+  else if(units_consumed > 100 && units_consumed <= 200) {
+    bill_amount = 100 * 3.50 + (units_consumed - 100) * 4.50; //Rs. 4.50 per unit for next 100 units
+  }
+  else {
+    bill_amount = 100 * 3.50 + 100 * 4.50 + (units_consumed - 200) * 6.00; //Rs. 6.00 per unit for remaining units
+  }
+  
+  Serial.print("Units Consumed: ");
+  Serial.print(units_consumed);
+  Serial.print("\tBill Amount: Rs. ");
+  Serial.println(bill_amount, 2); //print bill amount with 2 decimal places
+  
+  delay(1000); //wait for 1 second before taking the next reading
+}
