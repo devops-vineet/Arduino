@@ -1,0 +1,100 @@
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+//Water dispenser with push button to increase water quantity
+//Define pins for the relay module
+#define relayPin 8
+
+//Define pins for push buttons
+#define button1 2
+#define button2 3
+#define button3 4
+#define button4 6
+
+//Define water pump pin
+#define pumpPin 13
+
+//Set initial water quantity to 100ml
+int water_quantity = 100;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();  
+  //Set pins as inputs or outputs
+  pinMode(relayPin, OUTPUT);
+  pinMode(button1, INPUT_PULLUP);
+  pinMode(button2, INPUT_PULLUP);
+  pinMode(button3, INPUT_PULLUP);
+  pinMode(button4, INPUT_PULLUP);
+  pinMode(pumpPin, OUTPUT);
+  lcd.setCursor(0,0);
+  lcd.print("Water Qty:");
+  lcd.setCursor(15,0);
+  Serial.println("ml");  
+  //Turn off the relay module
+  digitalWrite(relayPin, LOW);
+  
+  //Set serial communication rate
+  Serial.begin(9600);
+}
+
+void loop() {
+  //Read push button inputs
+  int button1_state = digitalRead(button1);
+  int button2_state = digitalRead(button2);
+  int button3_state = digitalRead(button3);
+  int button4_state = digitalRead(button4);
+  //Check if button 1 is pressed
+  if (button1_state == LOW) {
+    //Increase water quantity by 100ml
+    water_quantity += 100;
+    lcd.setCursor(11,0);
+    lcd.print(water_quantity);
+    delay(500);
+  }
+  
+  //Check if button 2 is pressed
+  if (button2_state == LOW) {
+    //Increase water quantity by 200ml
+    water_quantity += 200;
+    lcd.setCursor(11,0);
+    lcd.print(water_quantity);
+    delay(500);
+  }
+  
+  //Check if button 3 is pressed
+  if (button3_state == LOW) {
+    //Increase water quantity by 300ml
+    water_quantity += 300;
+    lcd.setCursor(11,0);
+    lcd.print(water_quantity);
+    delay(500);
+  }
+  
+if (button4_state == LOW) {  
+  //Check if water quantity is greater than 0
+  if (water_quantity > 0) {
+    //Turn on the relay module to activate water pump
+    digitalWrite(relayPin, HIGH);
+    digitalWrite(pumpPin, HIGH);
+    lcd.setCursor(1, 0);
+    lcd.println("Water dispensing");
+    //Calculate time required to dispense water based on quantity
+    int dispense_time = water_quantity / 10; //Assuming 10ml/sec flow rate
+    
+    //Dispense water for calculated time
+    delay(dispense_time * 1000);
+    
+    //Turn off the relay module and water pump
+    digitalWrite(relayPin, LOW);
+    digitalWrite(pumpPin, LOW);
+    
+    //Reset water quantity to initial value
+    water_quantity = 100;
+    lcd.clear();    
+    lcd.setCursor(1, 0);
+    lcd.println("Water dispensed!");
+    water_quantity = 0;
+  }
+}
+}
