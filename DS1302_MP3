@@ -1,0 +1,129 @@
+#include <virtuabotixRTC.h> //Library used
+//CLK_PIN = 5 
+//DAT_PIN = 4 
+//RST_PIN = 2
+#include <SoftwareSerial.h>
+#include <DFRobotDFPlayerMini.h>
+
+SoftwareSerial mySerial(10, 11); // RX, TX
+DFRobotDFPlayerMini myDFPlayer;
+
+//virtuabotixRTC myRTC(CLK_PIN, DAT_PIN, RST_PIN); //If you change the wiring change the pins here also
+virtuabotixRTC myRTC(2, 3, 4); //If you change the wiring change the pins here also
+
+unsigned long previousMillis = 0;   // initialize the previous time to 0
+const long interval = 1000;         // declare the delay interval
+
+void setup() {
+  Serial.begin(9600);
+  mySerial.begin(9600);
+  delay(1000);
+  
+  if (!myDFPlayer.begin(mySerial)) {  // Use softwareSerial to communicate with mp3 module
+    Serial.println(F("Unable to begin:"));
+    Serial.println(F("1.Please recheck the connection!"));
+    Serial.println(F("2.Please insert the SD card!"));
+    while(true){
+      delay(0); // Code will stuck here when DFPlayer is not connected.
+    }
+  }
+
+  myDFPlayer.volume(100);  // Set volume to 30
+// Set the current date, and time in the following format:
+ // seconds, minutes, hours, day of the week, day of the month, month, year
+ //myRTC.setDS1302Time(16, 59, 16, 7, 25, 3, 2023); //Here you write your actual time/date as shown above 
+ //but remember to "comment/remove" this function once you're done
+ //The setup is done only one time and the module will continue counting it automatically
+  //myDFPlayer.play(1); // Play track 1
+  //delay(3000);
+  myDFPlayer.play(2); // Play track 1 
+}
+
+void loop() {
+ // This allows for the update of variables for time or accessing the individual elements.
+ myRTC.updateTime();
+ if (myRTC.hours == 5 && myRTC.minutes == 0){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(3);
+ delay(15000);
+}
+
+if (myRTC.hours == 8 && myRTC.minutes == 0){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(4);
+ delay(15000);
+}
+
+if (myRTC.hours == 9 && myRTC.minutes == 0){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(6);
+ delay(15000);
+}
+
+if (myRTC.hours == 11 && myRTC.minutes == 0){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(7);
+ delay(15000);
+}
+
+if (myRTC.hours == 12 && myRTC.minutes == 30){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(8);
+ delay(15000);
+}
+
+if (myRTC.hours == 15 && myRTC.minutes == 0){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(9);
+ delay(15000);
+}
+
+if (myRTC.hours == 17 && myRTC.minutes == 30){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(10);
+ delay(15000);
+}
+
+if (myRTC.hours == 18 && myRTC.minutes == 30){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(11);
+ delay(15000);
+}
+
+if (myRTC.hours == 9 && myRTC.minutes == 0){
+ myDFPlayer.play(1); // Play track 1
+ delay(3000);   
+ myDFPlayer.play(5);
+ delay(15000);
+}
+
+unsigned long currentMillis = millis();
+
+if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+
+// Start printing elements as individuals
+ Serial.print("Current Date / Time: ");
+ Serial.print(myRTC.dayofmonth); //You can switch between day and month if you're using American system
+ Serial.print("/");
+ Serial.print(myRTC.month);
+ Serial.print("/");
+ Serial.print(myRTC.year);
+ Serial.print(" ");
+ Serial.print(myRTC.hours);
+ Serial.print(":");
+ Serial.print(myRTC.minutes);
+ Serial.print(":");
+ Serial.println(myRTC.seconds);
+}
+// Delay so the program doesn't print non-stop
+ //delay(1000);
+}
